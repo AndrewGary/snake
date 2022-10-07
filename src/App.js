@@ -16,28 +16,50 @@ function App() {
   }
 
   const moveSnake = () => {
-    switch(direction){
-      case 'N': {
-        setBoardArray(boardArray.map((tile, i) => {
-          if(i === snakeCoords[0] - 10){
-            console.log('in here')
-            return <div className='w-[10%] h-[10%] border bg-black'>
 
-            </div>
-          }else{
-            return <div className='w-[10%] h-[10%] border bg-white'></div>
-          }
-        }))
-      }
-      case 'S': {
+    // switch(direction){
+    //   case 'N': {
+    //     setBoardArray(boardArray.map((tile, i) => {
+    //       if(i === snakeCoords[0] - 10){
+    //         console.log('in here')
+    //         return <div className='w-[10%] h-[10%] border bg-black'>
+
+    //         </div>
+    //       }else{
+    //         return <div className='w-[10%] h-[10%] border bg-white'></div>
+    //       }
+    //     }))
+    //   }
+    //   case 'S': {
         
-      }
-      case 'E': {
+    //   }
+    //   case 'E': {
         
-      }
-      case 'W': {
+    //   }
+    //   case 'W': {
         
-      }
+    //   }
+    // setBoardArray(boardArray.map((arrayObj, i) => {
+    //   setBoardArray(boardArray.map(obj => {
+    //     return { color: 'black'}
+    //   }))
+    // }))
+    if(direction === 'U'){
+      const blah = [...boardArray];
+
+      
+    }
+
+    if(direction === 'R'){
+    const blah = [...boardArray];
+
+    blah[snakeArray[0]] = {color: 'white'}
+    blah[snakeArray[0] + 1] = {color: 'black'}
+
+    const newSnakeArray = [snakeArray[0] + 1]
+    setSnakeArray(newSnakeArray);
+
+    setBoardArray([...blah])
     }
   }
 
@@ -61,26 +83,18 @@ function App() {
 
   }, [])
 
-
-  // useEffect(() => {
-
-  //   const blah = () => {
-  //     setTest(test + 1);
-  //   }
-  //   setInterval(blah, 1000)
-  // }, [])
-
   const [boardArray, setBoardArray] = useState(exportArray);
   const [direction, setDirection] = useState('')
   const [active, setActive] = useState(false);
-  const [snakeCoords, setSnakeCoords] = useState([44]);
+  const [snakeArray, setSnakeArray] = useState([44]);
   const [foodCoords, setFoodCoords] = useState([])
   return (
     <div className='w-full min-h-screen flex justify-center items-center'>
       <div className='w-[500px] h-[500px] border border-black flex flex-wrap'>
-        {boardArray.map(tile => {
+        {boardArray.map((tile, i) => {
+          console.log(i + ': ' + tile.color)
           return (
-            <div className={`w-[10%] h-[10%] border bg-${tile.color}`}>
+            <div key={i} className={`w-[10%] h-[10%] border bg-${tile.color}`}>
 
             </div>
           )
