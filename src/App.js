@@ -26,7 +26,7 @@ function App() {
       
       if(!boardArray[snakeArray[0] - 10] || snakeArray.includes(boardArray[snakeArray[0] - 10])){
         endOfGame()
-        setActive(false)
+        setGameActive(false)
         console.log('done')
       }else if(snakeArray[0] - 10 === foodCoords){
         const blah = [foodCoords]
@@ -52,7 +52,7 @@ function App() {
     if(direction === 'D'){
       if(!boardArray[snakeArray[0] + 10] || snakeArray.includes(boardArray[snakeArray[0] + 10])){
         endOfGame()
-        setActive(false)
+        setGameActive(false)
         console.log('done');
       }else if(snakeArray[0] + 10 === foodCoords){
         const blah = [foodCoords]
@@ -77,7 +77,7 @@ function App() {
     if(direction === 'L'){
       if(snakeArray[0] % 10 === 0  || snakeArray.includes(boardArray[snakeArray[0] - 1])){
         endOfGame()
-        setActive(false)
+        setGameActive(false)
         console.log('done');
       }else if(snakeArray[0] - 1 === foodCoords){
         const blah = [foodCoords]
@@ -103,7 +103,7 @@ function App() {
 
       if((snakeArray[0] + 1) % 10 === 0 || snakeArray.includes(snakeArray[0] + 1)){
         endOfGame()
-        setActive(false)
+        setGameActive(false)
         console.log('done');
       }else if(snakeArray[0] + 1 === foodCoords){
         const blah = [foodCoords];
@@ -133,7 +133,7 @@ function App() {
       check = Math.floor(Math.random() * 99)
     }
 
-    setFoodCoords(check);
+    setFoodCoords(check)
   }
 
   useInterval(() => {
@@ -155,23 +155,34 @@ function App() {
   }
 
   const handleKeyDown = e => {
-    // if(e.key === 'ArrowDown' && direction !== 'U'){
-    //   setDirection(e.key[5])
-    // }else if(e.key === 'ArrowUp' && direction !== 'D'){
-    //   setDirection(e.key[5])
-    // }else if(e.key === 'ArrowLeft' && direction !== 'R'){
-    //   setDirection(e.key[5])
-    // }else if(e.key === 'ArrowRight' && direction !== 'L'){
-    //   setDirection(e.key[5])
-    // }
-    
-    if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
-      if(foodRef.current === -1){
-        setActive(true)
-        getNewFoodCord();
+
+    if(directionRef.current === ''){
+      setGameActive(true);
+      getNewFoodCord();
+      setDirectionState(e.key[5])
+    }else{
+      console.log('directionRef.current: ', directionRef.current);
+      console.log('e.key: ', e.key);
+
+      if(e.key === 'ArrowDown' && directionRef.current !== 'U'){
+        setDirectionState(e.key[5]);
+      }else if(e.key === 'ArrowUp' && directionRef.current !== 'D'){
+        setDirectionState(e.key[5]);
+      }else if(e.key === 'ArrowLeft' && directionRef.current !== 'R'){
+        setDirectionState(e.key[5]);
+      }else if(e.key === 'ArrowRight' && directionRef.current !== 'L'){
+        setDirectionState(e.key[5]);
       }
-      setDirection(e.key[5])
     }
+    // if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+      
+      
+    //   if(directionRef.current === ''){
+    //     setActive(true)
+    //     getNewFoodCord();
+    //   }
+    //   setDirectionState(e.key[5])
+    // }
 
   }
 
@@ -183,14 +194,20 @@ function App() {
 
   const [boardArray, setBoardArray] = useState(exportArray);
   const [direction, setDirection] = useState('')
+
   const [active, setActive] = useState(false);
+  const activeRef = useRef(active);
+  const setGameActive = data => {
+    activeRef.current = data;
+    setActive(data)
+  }
   const [snakeArray, setSnakeArray] = useState([45]);
   const [foodCoords, setFoodCoords] = useState(-1)
   const [score, setScore] = useState(0);
 
-  const foodRef = useRef(foodCoords);
+  const directionRef = useRef(direction);
   const setDirectionState = data => {
-    foodRef.current = data;
+    directionRef.current = data;
     setDirection(data)
   }
   return (
@@ -206,26 +223,14 @@ function App() {
           } else{
             tt = 'w-[10%] h-[10%] border bg-white'
           }
-          // if(tile.color === 'white'){
-          //   tt = 'w-[10%] h-[10%] border bg-white'
-          // }else if(tile.color === 'red'){
-          //   tt = 'w-[10%] h-[10%] border bg-red-500'
-          // }else if(tile.color === 'black'){
-          //   tt = 'w-[10%] h-[10%] border bg-black'
-          // }
           return (
-            <div key={i} className={tt}>
+            <div key={i} className={tt} />
 
-            </div>
           )
         })}
       </div>
-      <div>
-        <button className='border border-red' onClick={() => {
-          setActive(!active);
-          setDirection('U')
-          getNewFoodCord()
-        }}>Start</button>
+      <div className='h-4'>
+        <h1 className={active ? 'hidden' : ''}>Press an Arrow Key to Start Game</h1>
 
       </div>
     </div>
