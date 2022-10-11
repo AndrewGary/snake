@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import { exportArray } from './utils/utils';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useInterval } from './utils/utils';
 
 function App() {
@@ -25,6 +25,7 @@ function App() {
     if(direction === 'U'){
       
       if(!boardArray[snakeArray[0] - 10] || snakeArray.includes(boardArray[snakeArray[0] - 10])){
+        endOfGame()
         setActive(false)
         console.log('done')
       }else if(snakeArray[0] - 10 === foodCoords){
@@ -50,6 +51,7 @@ function App() {
 
     if(direction === 'D'){
       if(!boardArray[snakeArray[0] + 10] || snakeArray.includes(boardArray[snakeArray[0] + 10])){
+        endOfGame()
         setActive(false)
         console.log('done');
       }else if(snakeArray[0] + 10 === foodCoords){
@@ -74,6 +76,7 @@ function App() {
 
     if(direction === 'L'){
       if(snakeArray[0] % 10 === 0  || snakeArray.includes(boardArray[snakeArray[0] - 1])){
+        endOfGame()
         setActive(false)
         console.log('done');
       }else if(snakeArray[0] - 1 === foodCoords){
@@ -99,6 +102,7 @@ function App() {
     if(direction === 'R'){
 
       if((snakeArray[0] + 1) % 10 === 0 || snakeArray.includes(snakeArray[0] + 1)){
+        endOfGame()
         setActive(false)
         console.log('done');
       }else if(snakeArray[0] + 1 === foodCoords){
@@ -136,12 +140,18 @@ function App() {
     if(active){
       moveSnake();
     }
-  }, 100)
+  }, 200)
 
   const endOfGame = e => {
-    useInterval(() => {
-      console.log('done');
-    }, [100])
+    const copy = [...snakeArray];
+    let index = 0;
+    const blah = setInterval(() => {
+      if(index === 11){
+        clearInterval(blah)
+      }
+      setSnakeArray(index % 2 === 0 ? [] : [...copy])
+      index++
+    }, 100)
   }
 
   const handleKeyDown = e => {
@@ -154,14 +164,19 @@ function App() {
     // }else if(e.key === 'ArrowRight' && direction !== 'L'){
     //   setDirection(e.key[5])
     // }
+    
     if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+      if(foodRef.current === -1){
+        setActive(true)
+        getNewFoodCord();
+      }
       setDirection(e.key[5])
     }
 
   }
 
   useEffect(() => {
-    window.addEventListener('keydown',(e) => {
+    document.addEventListener('keydown',(e) => {
       handleKeyDown(e);
     })
   }, [])
@@ -170,12 +185,18 @@ function App() {
   const [direction, setDirection] = useState('')
   const [active, setActive] = useState(false);
   const [snakeArray, setSnakeArray] = useState([45]);
-  const [foodCoords, setFoodCoords] = useState()
+  const [foodCoords, setFoodCoords] = useState(-1)
   const [score, setScore] = useState(0);
+
+  const foodRef = useRef(foodCoords);
+  const setDirectionState = data => {
+    foodRef.current = data;
+    setDirection(data)
+  }
   return (
     <div className='w-full min-h-screen flex flex-col justify-center items-center'>
         <h1>Score: {score}</h1>
-      <div className='w-[500px] h-[500px] border border-black flex flex-wrap'>
+      <div className='w-[600px] h-[600px] border border-black flex flex-wrap'>
         {boardArray.map((tile, i) => {
           let tt;
           if(snakeArray.includes(i)){
@@ -194,20 +215,19 @@ function App() {
           // }
           return (
             <div key={i} className={tt}>
-            
-            {/* // <div key={i} className={`w-[10%] h-[10%] border bg-${tile.color}${tile.color === 'red' ? '-500' : ''}`}> */}
 
             </div>
           )
         })}
       </div>
+      <div>
         <button className='border border-red' onClick={() => {
           setActive(!active);
           setDirection('U')
           getNewFoodCord()
         }}>Start</button>
 
-        <button onClick={endOfGame}>testing</button>
+      </div>
     </div>
   );
 }
