@@ -143,6 +143,7 @@ function App() {
   }, 200)
 
   const endOfGame = e => {
+    setRecentlyEnded(true);
     const copy = [...snakeArray];
     let index = 0;
     const blah = setInterval(() => {
@@ -155,6 +156,14 @@ function App() {
   }
 
   const handleKeyDown = e => {
+
+    if(recentlyEndedRef.current === true){
+      setRecentlyEnded(false)
+      setSnakeArray([45])
+      getNewFoodCord();
+      setGameActive(true)
+      setScore(0)
+    }
 
     if(directionRef.current === ''){
       setGameActive(true);
@@ -174,15 +183,6 @@ function App() {
         setDirectionState(e.key[5]);
       }
     }
-    // if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
-      
-      
-    //   if(directionRef.current === ''){
-    //     setActive(true)
-    //     getNewFoodCord();
-    //   }
-    //   setDirectionState(e.key[5])
-    // }
 
   }
 
@@ -201,6 +201,14 @@ function App() {
     activeRef.current = data;
     setActive(data)
   }
+
+  const [gameRecentlyEnded, setGameRecentlyEnded] = useState(false);
+  const recentlyEndedRef = useRef(gameRecentlyEnded);
+  const setRecentlyEnded = data => {
+    recentlyEndedRef.current = data;
+    setGameRecentlyEnded(data)
+  }
+
   const [snakeArray, setSnakeArray] = useState([45]);
   const [foodCoords, setFoodCoords] = useState(-1)
   const [score, setScore] = useState(0);
