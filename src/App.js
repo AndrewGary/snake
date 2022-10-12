@@ -4,35 +4,42 @@ import { exportArray } from './utils/utils';
 import React, { useState, useEffect, useRef } from 'react';
 import { useInterval } from './utils/utils';
 
+
+/**
+ * 
+ * nextStep will be to add a green fruit that speeds the snake up by double
+ * step 1 - change the foodCord from using a integer to a object - DONE
+ * step 2 - change the useInterval to use a dynamic delay
+ * 
+ */
 function App() {
 
-  const movable = () => {
-    if(direction === 'U' && !boardArray[snakeArray[0] - 10]){
-      return false
-    }else if(direction === 'D' && !boardArray[snakeArray[0] + 10]){
-      return false
-    }else if(direction === 'L' && snakeArray[0] % 10 === 0){
-      return false
-    }else if(direction === 'R' && (snakeArray[0] + 1) % 10 === 0){
-      return false
-    }else{
-      return true
-    }
+  const frameRate = useRef(200)
+
+  const handleSpeedUp = () => {
+    frameRate.current = 100;
+    setTimeout(() => {
+      frameRate.current = 200;
+    }, 3000)
   }
 
   const moveSnake = () => {
 
     if(direction === 'U'){
       
-      if(!boardArray[snakeArray[0] - 10] || snakeArray.includes(boardArray[snakeArray[0] - 10])){
+      if(!boardArray[snakeArray[0] - 10] || snakeArray.includes(snakeArray[0] - 10)){
         endOfGame()
         setGameActive(false)
         console.log('done')
-      }else if(snakeArray[0] - 10 === foodCoords){
-        const blah = [foodCoords]
+      }else if(snakeArray[0] - 10 === foodCoords.index){
+        const blah = [foodCoords.index]
 
         for(let i = 0; i < snakeArray.length; i++){
           blah.push(snakeArray[i])
+        }
+
+        if(foodCoords.type === 'speedUp'){
+          handleSpeedUp();
         }
         getNewFoodCord();
         setScore(score + 1);
@@ -50,15 +57,19 @@ function App() {
     
 
     if(direction === 'D'){
-      if(!boardArray[snakeArray[0] + 10] || snakeArray.includes(boardArray[snakeArray[0] + 10])){
+      if(!boardArray[snakeArray[0] + 10] || snakeArray.includes(snakeArray[0] + 10)){
         endOfGame()
         setGameActive(false)
         console.log('done');
-      }else if(snakeArray[0] + 10 === foodCoords){
-        const blah = [foodCoords]
+      }else if(snakeArray[0] + 10 === foodCoords.index){
+        const blah = [foodCoords.index]
 
         for(let i = 0; i < snakeArray.length; i++){
           blah.push(snakeArray[i])
+        }
+
+        if(foodCoords.type === 'speedUp'){
+          handleSpeedUp();
         }
         getNewFoodCord();
         setScore(score + 1);
@@ -75,15 +86,19 @@ function App() {
     }
 
     if(direction === 'L'){
-      if(snakeArray[0] % 10 === 0  || snakeArray.includes(boardArray[snakeArray[0] - 1])){
+      if(snakeArray[0] % 10 === 0  || snakeArray.includes(snakeArray[0] - 1)){
         endOfGame()
         setGameActive(false)
         console.log('done');
-      }else if(snakeArray[0] - 1 === foodCoords){
-        const blah = [foodCoords]
+      }else if(snakeArray[0] - 1 === foodCoords.index){
+        const blah = [foodCoords.index]
 
         for(let i = 0; i < snakeArray.length; i++){
           blah.push(snakeArray[i]);
+        }
+
+        if(foodCoords.type === 'speedUp'){
+          handleSpeedUp();
         }
         getNewFoodCord()
         setScore(score + 1);
@@ -105,11 +120,15 @@ function App() {
         endOfGame()
         setGameActive(false)
         console.log('done');
-      }else if(snakeArray[0] + 1 === foodCoords){
-        const blah = [foodCoords];
+      }else if(snakeArray[0] + 1 === foodCoords.index){
+        const blah = [foodCoords.index];
 
         for(let i = 0; i < snakeArray.length; i++){
           blah.push(snakeArray[i]);
+        }
+
+        if(foodCoords.type === 'speedUp'){
+          handleSpeedUp();
         }
         getNewFoodCord();
         setScore(score + 1);
@@ -133,14 +152,17 @@ function App() {
       check = Math.floor(Math.random() * 99)
     }
 
-    setFoodCoords(check)
+    const speedUpFoodProbability = frameRate.current === 200 ? .3 : 0;
+    const type = Math.random() < speedUpFoodProbability ? 'speedUp' : 'normal'
+
+    setFoodCoords({type: type, index: check})
   }
 
   useInterval(() => {
     if(active){
       moveSnake();
     }
-  }, 200)
+  }, frameRate.current)
 
   const endOfGame = e => {
     setRecentlyEnded(true);
@@ -226,8 +248,12 @@ function App() {
           let tt;
           if(snakeArray.includes(i)){
             tt = 'w-[10%] h-[10%] border bg-black'
-          }else if(i === foodCoords){
-            tt = 'w-[10%] h-[10%] border bg-red-500'
+          }else if(i === foodCoords.index){
+            if(foodCoords.type === 'speedUp'){
+              tt = 'w-[10%] h-[10%] border bg-green-500'
+            }else{
+              tt = 'w-[10%] h-[10%] border bg-red-500'
+            }
           } else{
             tt = 'w-[10%] h-[10%] border bg-white'
           }
