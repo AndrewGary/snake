@@ -23,6 +23,24 @@ function App() {
     }, 3000)
   }
 
+  const handleShorten = () => {
+    // console.log('hitting handle shorten')
+    // console.log(snakeArray);
+    // const copy = [...snakeArray];
+
+    // console.log('----------------SA');
+    // console.log('before: ', copy);
+    // copy.pop();
+    // copy.pop();
+    // console.log('after: ', copy);
+
+    setSnakeArray(snakeArray.filter((arg, i) => {
+      if(i < snakeArray.length - 1){
+        return arg
+      }
+    }))
+  }
+
   const moveSnake = () => {
 
     if(direction === 'U'){
@@ -30,7 +48,7 @@ function App() {
       if(!boardArray[snakeArray[0] - 10] || snakeArray.includes(snakeArray[0] - 10)){
         endOfGame()
         setGameActive(false)
-        console.log('done')
+        // console.log('done')
       }else if(snakeArray[0] - 10 === foodCoords.index){
         const blah = [foodCoords.index]
 
@@ -40,6 +58,10 @@ function App() {
 
         if(foodCoords.type === 'speedUp'){
           handleSpeedUp();
+        }
+
+        if(foodCoords.type === 'shorten'){
+          handleShorten();
         }
         getNewFoodCord();
         setScore(score + 1);
@@ -60,7 +82,7 @@ function App() {
       if(!boardArray[snakeArray[0] + 10] || snakeArray.includes(snakeArray[0] + 10)){
         endOfGame()
         setGameActive(false)
-        console.log('done');
+        // console.log('done');
       }else if(snakeArray[0] + 10 === foodCoords.index){
         const blah = [foodCoords.index]
 
@@ -70,6 +92,10 @@ function App() {
 
         if(foodCoords.type === 'speedUp'){
           handleSpeedUp();
+        }
+
+        if(foodCoords.type === 'shorten'){
+          handleShorten();
         }
         getNewFoodCord();
         setScore(score + 1);
@@ -89,7 +115,6 @@ function App() {
       if(snakeArray[0] % 10 === 0  || snakeArray.includes(snakeArray[0] - 1)){
         endOfGame()
         setGameActive(false)
-        console.log('done');
       }else if(snakeArray[0] - 1 === foodCoords.index){
         const blah = [foodCoords.index]
 
@@ -99,6 +124,10 @@ function App() {
 
         if(foodCoords.type === 'speedUp'){
           handleSpeedUp();
+        }
+
+        if(foodCoords.type === 'shorten'){
+          handleShorten();
         }
         getNewFoodCord()
         setScore(score + 1);
@@ -119,7 +148,6 @@ function App() {
       if((snakeArray[0] + 1) % 10 === 0 || snakeArray.includes(snakeArray[0] + 1)){
         endOfGame()
         setGameActive(false)
-        console.log('done');
       }else if(snakeArray[0] + 1 === foodCoords.index){
         const blah = [foodCoords.index];
 
@@ -129,6 +157,10 @@ function App() {
 
         if(foodCoords.type === 'speedUp'){
           handleSpeedUp();
+        }
+
+        if(foodCoords.type === 'shorten'){
+          handleShorten();
         }
         getNewFoodCord();
         setScore(score + 1);
@@ -152,10 +184,25 @@ function App() {
       check = Math.floor(Math.random() * 99)
     }
 
-    const speedUpFoodProbability = frameRate.current === 200 ? .3 : 0;
-    const type = Math.random() < speedUpFoodProbability ? 'speedUp' : 'normal'
+    const typeRoll = Math.random();
 
-    setFoodCoords({type: type, index: check})
+    // console.log(typeRoll)
+
+    if(typeRoll <= .15){
+      setFoodCoords({type: 'shorten', index: check})
+      
+    }else if(typeRoll > .15 && typeRoll <= .3){
+      setFoodCoords({type: 'shorten', index: check})
+
+    }else{
+      setFoodCoords({type: 'normal', index: check})
+
+    }
+
+    // const speedUpFoodProbability = frameRate.current === 200 ? .3 : 0;
+    // const type = Math.random() < speedUpFoodProbability ? 'speedUp' : 'normal'
+
+    // setFoodCoords({type: type, index: check})
   }
 
   useInterval(() => {
@@ -192,8 +239,8 @@ function App() {
       getNewFoodCord();
       setDirectionState(e.key[5])
     }else{
-      console.log('directionRef.current: ', directionRef.current);
-      console.log('e.key: ', e.key);
+      // console.log('directionRef.current: ', directionRef.current);
+      // console.log('e.key: ', e.key);
 
       if(e.key === 'ArrowDown' && directionRef.current !== 'U'){
         setDirectionState(e.key[5]);
@@ -251,6 +298,8 @@ function App() {
           }else if(i === foodCoords.index){
             if(foodCoords.type === 'speedUp'){
               tt = 'w-[10%] h-[10%] border bg-green-500'
+            }else if(foodCoords.type === 'shorten'){
+              tt = 'w-[10%] h-[10%] border bg-blue-500'
             }else{
               tt = 'w-[10%] h-[10%] border bg-red-500'
             }
