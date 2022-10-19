@@ -279,8 +279,8 @@ function App() {
   //END OF GAME LOOP SECTION
 
 	return (
-		<div className="w-full min-h-screen flex flex-col justify-center items-center">
-			<h1>Score: {score}</h1>
+		<div className="bg-slate-500  w-full min-h-screen flex flex-col justify-center items-center">
+			<h1 className="text-2xl mb-5">Score: {score}</h1>
 			<div className="w-[600px] h-[600px] border border-black flex flex-wrap">
 				{boardArray.map((tile, i) => {
 					let tt;
@@ -295,15 +295,32 @@ function App() {
 							tt = "w-[10%] h-[10%] border bg-red-500";
 						}
 					} else {
-						tt = "w-[10%] h-[10%] border bg-white";
+						tt = "w-[10%] h-[10%] border bg-slate-100 ";
 					}
 					return <div key={i} className={tt} />;
 				})}
 			</div>
-			<div className="h-4">
-				<h1 className={active ? "hidden" : ""}>
+			<div className="h-4 flex flex-col w-1/2 items-center">
+				<h2 className={active ? "hidden" : "text-2xl mt-4"}>
 					Press an Arrow Key to Start Game
-				</h1>
+				</h2>
+
+				<div className=" w-full flex justify-center space-x-4 mt-3">
+					<div className="h-full flex items-center">
+						<div className="w-[40px] h-[40px] bg-red-500 inline-flex" />
+						<span className="text-xl pl-2">- Normal</span>
+					</div>
+
+					<div className="h-full flex items-center">
+						<div className="w-[40px] h-[40px] bg-green-500 inline-flex" />
+						<span className="text-xl pl-2">- 2x Speed</span>
+					</div>
+
+					<div className="h-full flex items-center">
+						<div className="w-[40px] h-[40px] bg-blue-500 inline-flex" />
+						<span className="text-xl pl-2">- Shorten Snake</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	);
