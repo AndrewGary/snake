@@ -1,6 +1,8 @@
 import { exportArray } from "./utils/utils";
 import React, { useState, useEffect, useRef } from "react";
 import { useInterval } from "./utils/utils";
+import { moveSnake } from './utils/utils';
+import { handleKeyDown } from './utils/utils';
 
 function App() {
   //STATE SECTION
@@ -64,6 +66,11 @@ function App() {
 		let index = 0;
 		const blah = setInterval(() => {
 			if (index === 11) {
+				setRecentlyEnded(false);
+				setSnakeArray([45]);
+				getNewFoodCord();
+				// setGameActive(true);
+				setScore(0);
 				clearInterval(blah);
 			}
 			setSnakeArray(index % 2 === 0 ? [] : [...copy]);
@@ -98,184 +105,19 @@ function App() {
   useEffect(() => {
 		document.addEventListener("keydown", (e) => {
       if(e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')
-			handleKeyDown(e);
+			handleKeyDown(e, setGameActive, getNewFoodCord, setDirectionState, directionRef, recentlyEndedRef);
 		});
 	}, []);
-
-  const handleKeyDown = (e) => {
-		if (recentlyEndedRef.current === true) {
-			setRecentlyEnded(false);
-			setSnakeArray([45]);
-			getNewFoodCord();
-			setGameActive(true);
-			setScore(0);
-		}
-
-		if (directionRef.current === "") {
-			setGameActive(true);
-			getNewFoodCord();
-			setDirectionState(e.key[5]);
-		} else {
-			if (e.key === "ArrowDown" && directionRef.current !== "U") {
-				setDirectionState(e.key[5]);
-			} else if (e.key === "ArrowUp" && directionRef.current !== "D") {
-				setDirectionState(e.key[5]);
-			} else if (e.key === "ArrowLeft" && directionRef.current !== "R") {
-				setDirectionState(e.key[5]);
-			} else if (e.key === "ArrowRight" && directionRef.current !== "L") {
-				setDirectionState(e.key[5]);
-			}
-		}
-	};
-  //END OF KEYLISTENER SECTION
+//END OF KEYLISTENER SECTION
 
   //GAMELOOP SECTION
   //This section sets up the global game loop that calls moveSnake at the current frameRate Interval
   //that is set in the state section of the code
   useInterval(() => {
 		if (active) {
-			moveSnake();
+			moveSnake(boardArray, snakeArray, endOfGame, setGameActive, foodCoords, handleSpeedUp, setSnakeArray, handleShorten, getNewFoodCord, setScore, score, directionRef.current);
 		}
 	}, frameRate.current);
-
-	const moveSnake = () => {
-		if (direction === "U") {
-			if (
-				!boardArray[snakeArray[0] - 10] ||
-				snakeArray.includes(snakeArray[0] - 10)
-			) {
-				endOfGame();
-				setGameActive(false);
-			} else if (snakeArray[0] - 10 === foodCoords.index) {
-				const blah = [foodCoords.index];
-
-				for (let i = 0; i < snakeArray.length; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				if (foodCoords.type === "speedUp") {
-					handleSpeedUp();
-				} else if (foodCoords.type === "shorten") {
-					setSnakeArray(blah);
-					handleShorten();
-				} else {
-					setSnakeArray(blah);
-				}
-				getNewFoodCord();
-				setScore(score + 1);
-			} else {
-				const blah = [snakeArray[0] - 10];
-
-				for (let i = 0; i < snakeArray.length - 1; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				setSnakeArray(blah);
-			}
-		}
-
-		if (direction === "D") {
-			if (
-				!boardArray[snakeArray[0] + 10] ||
-				snakeArray.includes(snakeArray[0] + 10)
-			) {
-				endOfGame();
-				setGameActive(false);
-			} else if (snakeArray[0] + 10 === foodCoords.index) {
-				const blah = [foodCoords.index];
-
-				for (let i = 0; i < snakeArray.length; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				if (foodCoords.type === "speedUp") {
-					setSnakeArray(blah);
-					handleSpeedUp();
-				} else if (foodCoords.type === "shorten") {
-					handleShorten();
-				} else {
-					setSnakeArray(blah);
-				}
-				getNewFoodCord();
-				setScore(score + 1);
-			} else {
-				const blah = [snakeArray[0] + 10];
-
-				for (let i = 0; i < snakeArray.length - 1; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				setSnakeArray(blah);
-			}
-		}
-
-		if (direction === "L") {
-			if (snakeArray[0] % 10 === 0 || snakeArray.includes(snakeArray[0] - 1)) {
-				endOfGame();
-				setGameActive(false);
-			} else if (snakeArray[0] - 1 === foodCoords.index) {
-				const blah = [foodCoords.index];
-
-				for (let i = 0; i < snakeArray.length; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				if (foodCoords.type === "speedUp") {
-					setSnakeArray(blah);
-					handleSpeedUp();
-				} else if (foodCoords.type === "shorten") {
-					handleShorten();
-				} else {
-					setSnakeArray(blah);
-				}
-				getNewFoodCord();
-				setScore(score + 1);
-			} else {
-				const blah = [snakeArray[0] - 1];
-
-				for (let i = 0; i < snakeArray.length - 1; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				setSnakeArray(blah);
-			}
-		}
-
-		if (direction === "R") {
-			if (
-				(snakeArray[0] + 1) % 10 === 0 ||
-				snakeArray.includes(snakeArray[0] + 1)
-			) {
-				endOfGame();
-				setGameActive(false);
-			} else if (snakeArray[0] + 1 === foodCoords.index) {
-				const blah = [foodCoords.index];
-
-				for (let i = 0; i < snakeArray.length; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				if (foodCoords.type === "speedUp") {
-					handleSpeedUp();
-					setSnakeArray(blah);
-				} else if (foodCoords.type === "shorten") {
-					handleShorten();
-				} else {
-					setSnakeArray(blah);
-				}
-				getNewFoodCord();
-				setScore(score + 1);
-			} else {
-				const blah = [snakeArray[0] + 1];
-
-				for (let i = 0; i < snakeArray.length - 1; i++) {
-					blah.push(snakeArray[i]);
-				}
-
-				setSnakeArray(blah);
-			}
-		}
-	};
   //END OF GAME LOOP SECTION
 
 	return (
