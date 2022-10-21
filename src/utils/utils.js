@@ -15,7 +15,6 @@ for(let i = 0; i < 100; i++){
     }
 }
 
-
 export function useInterval(callback, delay) {
   const savedCallback = useRef();
 
