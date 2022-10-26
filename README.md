@@ -1,3 +1,6 @@
+https://javascript.plainenglish.io/managing-global-state-with-react-redux-6b7279ec5f50
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
